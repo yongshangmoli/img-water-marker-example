@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>利用canvas为图片添加水印</title>
+    <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+    <script src="./js/img-water-marker.umd.min.js"></script>
+</head>
+<body>
+    <div id="app"></div>
+    <script>
+        const worker = new Worker('./js/offscreenCanvasWorker.js');
+        const e = React.createElement;
+        let content = `
+            <p>测试加水印</p>
+            <p>
+                <img src="http://puep.qpic.cn/coral/Q3auHgzwzM4fgQ41VTF2rMLd3Wial1jcJXIUiarZYgwpa0MvlxaXhiaHg/0" />
+            </p>
+        `
+        const imgWaterMarker = window['img-water-marker'];
+        class ContentWrapper extends React.Component {
+            constructor(props) {
+                super(props);
+                const transformedObj = imgWaterMarker.getCanvasHtml(content);
+                this.state = {
+                    imgUrls: transformedObj.imgUrls,
+                    articleContent: transformedObj.content
+                }
+            }
+
+            componentDidMount() {
+                const { imgUrls } = this.state;
+                imgWaterMarker.draw({
+                    imgUrls,
+                    worker,
+                    waterMarkerText: 'test',
+                    canvasConfig: {
+                        fillStyle: 'rgba(3, 3, 3, 0.45)'
+                    }
+                })
+            }
+
+            render() {
+                return e(
+                    'div',
+                    { dangerouslySetInnerHTML: { __html: this.state.articleContent } },
+                    null
+                );
+            }
+        }
+
+        const domContainer = document.querySelector('#app');
+        ReactDOM.render(e(ContentWrapper), domContainer);
+    </script>
+</body>
+</html>
