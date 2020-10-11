@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>利用canvas为图片添加水印</title>
+    <script src="./js/img-water-marker.umd.min.js"></script>
+    <script src="./js/main.js"></script>
+</head>
+<body>
+    <div>
+        <p>示例展示已有图片链接, 如何为图片添加水印（url表示图片链接）</p>
+        <canvas id="testCanvas1"></canvas>
+        <canvas id="testOffCanvas1"></canvas>
+        <p>(注：canvas的取名格式为prex + idx, idx表示当前是第几张图片， prex传给组件方法，目前url需要传数组类型)</p>
+    </div>
+    <script>
+        const imgWaterMarker = window['img-water-marker'];
+        const url = ['http://puep.qpic.cn/coral/Q3auHgzwzM4fgQ41VTF2rMLd3Wial1jcJXIUiarZYgwpa0MvlxaXhiaHg/0'];
+        // 直接利用canvas
+        imgWaterMarker.getWaterMarkedImg(url, 'woooooo', 'testCanvas');
+        // 利用offscreencanvas
+        const worker = new Worker('./js/offscreenCanvasWorker.js');
+        imgWaterMarker.draw({
+            canvasWorker: worker,
+            imgUrls: url,
+            waterMarkerText: 'ssssss',
+            canvasIdPrefix: 'testOffCanvas'
+        })
+    </script>
+</body>
+</html>
